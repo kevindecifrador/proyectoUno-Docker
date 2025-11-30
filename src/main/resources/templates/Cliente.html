@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>BIENVENIDOS CLIENTES</h1>
+	<h3 th:text="'Nombre de cliente: '+ ${nom}"></h3>
+	<h3 th:text="'Credito disponible: '+ ${credito}"></h3>
+	<h3 th:text="'a la Fecha del: '+ ${fecha}"></h3>
+	<h3 th:text="'Vigente '+ ${vigente}"></h3>
+
+</body>
+</html>

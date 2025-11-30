@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h4 th:if="${mesa.idMesa == null}">Crear Nueva Mesa</h4>
+                        <h4 th:unless="${mesa.idMesa == null}">Modificar Mesa</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/mesas/guardar}" th:object="${mesa}" method="POST">
+                            <input type="hidden" th:field="*{idMesa}" />
+                            <div class="mb-3">
+                                <label for="ubicacion" class="form-label">Ubicación</label>
+                                <input type="text" id="ubicacion" th:field="*{ubicacion}" class="form-control" placeholder="Ej: Terraza, Salón Principal..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="capacidad" class="form-label">Capacidad (personas)</label>
+                                <input type="number" id="capacidad" th:field="*{capacidad}" class="form-control" min="1" required>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                                <a th:href="@{/mesas}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

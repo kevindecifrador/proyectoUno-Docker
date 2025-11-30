@@ -1,0 +1,72 @@
+@charset "UTF-8";
+body {
+    background-image: url('/imagenrestaurant/fondorest3.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.preview-img { width:260px; height:170px; object-fit:cover; border-radius:12px; }
+.carousel-img { width:100%; height: 30vh; object-fit: cover; }
+
+.custom-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 5rem;
+    font-style: italic;
+}
+
+.mb-3 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    font-style: italic;
+}
+
+.card {
+  border: 0;
+  border-radius: 18px;
+  width: 80%;
+  margin: 0 auto;
+  background-color: #244821;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  overflow: hidden;
+}
+
+.card h5 {
+  color: #fff;
+}
+
+.card .form-select {
+  background-color: #d3d3d3;  
+  color: #333;               
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.card .form-select:focus {
+  box-shadow: 0 0 5px rgba(255,255,255,.8);
+}
+
+.card .small {
+  color: #f0f0f0 !important;
+}
+
+.card .btn-primary {
+  background-color: #fff;
+  color: #B49214;
+  border: none;
+  font-weight: 600;
+}
+.card .btn-primary:hover {
+  background-color: #f0f0f0;
+  color: #8a700f;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+}

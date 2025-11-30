@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/inicio-styles.css')}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link th:if="${styles}" th:href="@{${styles}}" rel="stylesheet" />
+</head>
+
+<body>
+<header th:replace="~{fragments/base :: headerCompleto}"></header>
+<main class="container-fluid my-4"> <h2 class="custom-title text-white text-center mb-4">Menú</h2>
+<div id="main-content-area">
+	<div class="card card-body mb-4">
+	    <form th:action="@{/productos}" method="GET" class="d-flex flex-wrap align-items-center gap-3">
+	        
+	        <div class="flex-grow-1">
+	            <label for="tipo" class="form-label visually-hidden">Tipo de Producto</label>
+	            <select name="tipo" id="tipo" class="form-select">
+	                <option value="">-- Todos los Tipos --</option>
+	                <option value="platillo">Platillo</option>
+	                <option value="bebida">Bebida</option>
+	                <option value="postre">Postre</option>
+	            </select>
+	        </div>
+	
+	        <div class="flex-grow-1">
+			    <label for="precioMin" class="form-label visually-hidden">Precio Mínimo</label>
+			    <div class="input-group">
+			        <span class="input-group-text">$</span>
+			        <input type="number" name="precioMin" id="precioMin" class="form-control" placeholder="Precio mínimo" step="0.01" min="0">
+			    </div>
+			</div>
+			<div class="flex-grow-1">
+			    <label for="precioMax" class="form-label visually-hidden">Precio Máximo</label>
+			    <div class="input-group">
+			        <span class="input-group-text">$</span>
+			        <input type="number" name="precioMax" id="precioMax" class="form-control" placeholder="Precio máximo" step="0.01" min="0">
+			    </div>
+			</div>
+	
+	        <div class="d-flex gap-2">
+	            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+	            <a th:href="@{/productos}" class="btn btn-secondary" style="background-color: #244821;"><i class="bi bi-x-lg"></i> Limpiar</a>
+	        </div>
+	
+	    </form>
+	</div>
+<div class="container-fluid p-0 mb-4">
+
+	<!-- CARRUSELES A 1/3 -->
+  <div class="row g-0 mb-4">
+
+  <div class="col-12 col-lg-4">
+    <div id="carPlatillos" class="carousel slide"
+         data-bs-ride="carousel" data-bs-interval="3000" data-bs-pause="false">
+      <div class="carousel-inner">
+        <div th:each="p,iter : ${platillos}" class="carousel-item"
+             th:classappend="${iter.index} == 0 ? ' active' : ''">
+          <img class="d-block w-100 carousel-img"
+		       th:src="${p.fotoProducto}" 
+		       th:alt="${p.nombre}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 th:text="${p.nombre}">Nombre</h5>
+            <span class="badge bg-secondary">platillo</span>
+          </div>
+        </div>
+      </div>
+      </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div id="carBebidas" class="carousel slide"
+         data-bs-ride="carousel" data-bs-interval="3500" data-bs-pause="false">
+      <div class="carousel-inner">
+        <div th:each="p,iter : ${bebidas}" class="carousel-item"
+             th:classappend="${iter.index} == 0 ? ' active' : ''">
+          <img class="d-block w-100 carousel-img"
+		       th:src="${p.fotoProducto}" 
+		       th:alt="${p.nombre}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 th:text="${p.nombre}">Nombre</h5>
+            <span class="badge bg-secondary">bebida</span>
+          </div>
+        </div>
+      </div>
+      </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div id="carPostres" class="carousel slide"
+         data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="false">
+      <div class="carousel-inner">
+        <div th:each="p,iter : ${postres}" class="carousel-item"
+             th:classappend="${iter.index} == 0 ? ' active' : ''">
+          <img class="d-block w-100 carousel-img"
+		       th:src="${p.fotoProducto}" 
+		       th:alt="${p.nombre}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 th:text="${p.nombre}">Nombre</h5>
+            <span class="badge bg-secondary">postre</span>
+          </div>
+        </div>
+      </div>
+      </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+  <div class="row">
+        <div class="col-lg-12">
+            <div class="row g-0">
+                <div class="col-12 col-md-4">
+                    <div class="card p-3 h-100">
+                        <h5 class="mb-3">Platillos</h5>
+                        <select id="selPlatillo" class="form-select mb-3">
+                            <option th:each="p : ${platillos}" th:value="${p.idProducto}" th:data-img="${p.fotoProducto}" th:data-url="@{'/productos/' + ${p.idProducto}}" th:data-name="${p.nombre}" th:data-type="${p.tipo}" th:data-price="${p.precio}" th:text="${p.nombre}"></option>
+                        </select>
+                        <div class="text-center mt-auto">
+                            <img id="imgPlatillo" class="preview-img mb-2" th:if="${!#lists.isEmpty(platillos)}" th:src="${platillos[0].fotoProducto}" alt="Platillo">
+                            <div class="small" th:if="${!#lists.isEmpty(platillos)}"><span id="namePlatillo" th:text="${platillos[0].nombre}"></span> · <span id="typePlatillo" th:text="${platillos[0].tipo}"></span></div>
+                            <div class="mt-2 d-flex justify-content-center gap-2" th:if="${!#lists.isEmpty(platillos)}">
+                                <a id="lnkPlatillo" class="btn btn-light btn-sm" th:href="@{'/productos/' + ${platillos[0].idProducto}}">Ver</a>
+                                <button class="btn btn-success btn-sm" onclick="addToCart('selPlatillo')"><i class="bi bi-plus-circle"></i> Añadir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card p-3 h-100">
+                        <h5 class="mb-3">Bebidas</h5>
+                        <select id="selBebida" class="form-select mb-3">
+                            <option th:each="p : ${bebidas}" th:value="${p.idProducto}" th:data-img="${p.fotoProducto}" th:data-url="@{'/productos/' + ${p.idProducto}}" th:data-name="${p.nombre}" th:data-type="${p.tipo}" th:data-price="${p.precio}" th:text="${p.nombre}"></option>
+                        </select>
+                        <div class="text-center mt-auto">
+                            <img id="imgBebida" class="preview-img mb-2" th:if="${!#lists.isEmpty(bebidas)}" th:src="${bebidas[0].fotoProducto}" alt="Bebida">
+                            <div class="small" th:if="${!#lists.isEmpty(bebidas)}"><span id="nameBebida" th:text="${bebidas[0].nombre}"></span> · <span id="typeBebida" th:text="${bebidas[0].tipo}"></span></div>
+                            <div class="mt-2 d-flex justify-content-center gap-2" th:if="${!#lists.isEmpty(bebidas)}">
+                                <a id="lnkBebida" class="btn btn-light btn-sm" th:href="@{'/productos/' + ${bebidas[0].idProducto}}">Ver</a>
+                                <button class="btn btn-success btn-sm" onclick="addToCart('selBebida')"><i class="bi bi-plus-circle"></i> Añadir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card p-3 h-100">
+                        <h5 class="mb-3">Postres</h5>
+                        <select id="selPostre" class="form-select mb-3">
+                            <option th:each="p : ${postres}" th:value="${p.idProducto}" th:data-img="${p.fotoProducto}" th:data-url="@{'/productos/' + ${p.idProducto}}" th:data-name="${p.nombre}" th:data-type="${p.tipo}" th:data-price="${p.precio}" th:text="${p.nombre}"></option>
+                        </select>
+                        <div class="text-center mt-auto">
+                            <img id="imgPostre" class="preview-img mb-2" th:if="${!#lists.isEmpty(postres)}" th:src="${postres[0].fotoProducto}" alt="Postre">
+                            <div class="small" th:if="${!#lists.isEmpty(postres)}"><span id="namePostre" th:text="${postres[0].nombre}"></span> · <span id="typePostre" th:text="${postres[0].tipo}"></span></div>
+                            <div class="mt-2 d-flex justify-content-center gap-2" th:if="${!#lists.isEmpty(postres)}">
+                                <a id="lnkPostre" class="btn btn-light btn-sm" th:href="@{'/productos/' + ${postres[0].idProducto}}">Ver</a>
+                                <button class="btn btn-success btn-sm" onclick="addToCart('selPostre')"><i class="bi bi-plus-circle"></i> Añadir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas offcanvas-end" 
+		     data-bs-scroll="true" 
+		     data-bs-backdrop="false" 
+		     tabindex="-1" 
+		     id="offcanvasCarrito" 
+		     aria-labelledby="offcanvasCarritoLabel" 
+		     style="background-color: #B49214; color: white;">
+		  
+		  <div class="offcanvas-header" style="background-color: rgba(0,0,0,.1);">
+		    
+		    <h5 class="offcanvas-title" id="offcanvasCarritoLabel">
+		        <i class="bi bi-cart3"></i> Resumen del Pedido
+		    </h5>
+		    
+		    <div style="width: 55%; max-width: 200px;">
+		      <label for="empleado-select" class="form-label fw-bold mb-1">Te atiende:</label>
+		      
+		      <select id="empleado-select" class="form-select form-select-sm">
+			    <option value="">Seleccione empleado</option>
+			    
+			    <option th:each="emp : ${empleados}"
+			            th:if="${emp != null}" 
+			            th:value="${emp.clave}"
+			            th:text="${emp.nombreCompleto + ' (' + emp.puesto + ')'}" th:selected="${pedidoParaEditar != null AND !pedidoParaEditar.empleadosQueAtienden.empty AND pedidoParaEditar.empleadosQueAtienden[0].clave == emp.clave}">
+			    </option>
+			</select>
+		    </div>
+		    
+		    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		  </div>
+		  
+		  <div class="offcanvas-body" style="font-size: 0.85rem;">
+		    
+		    <div class="mb-3">
+		        <label for="cliente-select" class="form-label fw-bold">Cliente:</label>
+		        <select id="cliente-select" class="form-select form-select-sm">
+				    <option value="">Seleccione un cliente</option>
+				    <option th:each="cli : ${clientes}"
+				            th:if="${cli != null}"
+				            th:value="${cli.id}"
+				            th:text="${cli.id + ' - ' + cli.nombre + ' ' + cli.apellidos}"
+				            th:selected="${pedidoParaEditar != null AND pedidoParaEditar.cliente != null AND pedidoParaEditar.cliente.id == cli.id}"> </option>
+				</select>
+		    </div>
+		
+		    <div class="mb-3">
+		        <label for="reservacion-select" class="form-label fw-bold">Reservación:</label>
+		        <select id="reservacion-select" class="form-select form-select-sm">
+				    <option value="">-- Ninguna --</option>
+				    <option th:each="res : ${reservacionesActivas}"
+				            th:if="${res != null}"
+				            th:value="${res.idServicio}"
+				            th:text="${'#' + res.idServicio + ' - Mesa ' + res.mesa.idMesa + ' (' + res.mesa.capacidad + 'personas) - ' + res.cliente.nombre + ' (' + #temporals.format(res.fecha, 'dd/MM') + ' ' + #temporals.format(res.hora, 'HH:mm') + ')'}"
+				            th:attr="data-cliente-id=${res.cliente.id}"
+				            th:selected="${pedidoParaEditar != null AND pedidoParaEditar.reservacion != null AND pedidoParaEditar.reservacion.idServicio == res.idServicio}">
+				    </option>
+				</select>
+		        <small style="font-family: 'Segoe UI', sans-serif; color: #e0e0e0; font-size: 0.85rem;">
+		            ¿No tienes una reservación?
+		            <a th:href="@{/reservaciones/crear}" style="color: #244821; text-decoration: underline;">Créala aquí</a>
+		        </small>
+		    </div>
+		    
+		    <hr style="border-top: 1px solid rgba(255,255,255,0.5);">
+		    
+		    <ul id="cart-details-list" class="list-group list-group-flush mb-2">
+		        </ul>
+		
+		    <div class="d-flex justify-content-between fw-bold border-top pt-2">
+		        <span>Total:</span>
+		        <span id="cart-total">$0.00</span>
+		    </div>
+		    <div sec:authorize="isAuthenticated()">
+			    <button id="btn-finalizar-pedido" class="btn btn-success w-100 mt-4">
+			        <i class="bi bi-check-circle"></i> Finalizar Pedido
+			    </button>
+			</div>
+			
+			<div sec:authorize="!isAuthenticated()">
+			    <a th:href="@{/login}" class="btn btn-warning w-100 mt-4">
+			        <i class="bi bi-box-arrow-in-right"></i> Inicia Sesión para pedir
+			    </a>
+			</div>
+		  </div>
+		</div>
+	</div>
+</div>
+</main>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Estas variables se "inyectan" desde tu Controlador
+    var initialCartData = /*[[${carritoParaEditarJSON}]]*/ null;
+    var editingPedidoId = /*[[${pedidoIdParaEditar}]]*/ null; 
+    /*]]>*/
+</script>
+
+<script>
+// --- 2. VARIABLES GLOBALES ---
+let offcanvasInstance;
+let floatingCartButton;
+let mainContentArea;
+let cart = [];
+
+// --- 3. FUNCIONES GLOBALES PARA 'onclick' ---
+// (Deben estar aquí afuera para que el HTML las vea)
+
+// Cargar carrito si estamos editando
+if (initialCartData) {
+    try {
+        const cleanJson = initialCartData.replace(/&quot;/g, '"');
+        cart = JSON.parse(cleanJson);
+    } catch(e) {
+        console.error("Error al cargar el carrito para editar:", e);
+    }
+}
+
+function addToCart(selectId) {
+    const selectElement = document.getElementById(selectId);
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    
+    const productId = selectedOption.value;
+    if (!productId) return; 
+
+    const productName = selectedOption.dataset.name;
+    const productPrice = parseFloat(selectedOption.dataset.price);
+    const productType = selectedOption.dataset.type.toLowerCase();
+
+    const existingProduct = cart.find(item => item.id === productId);
+
+    if (existingProduct) {
+        existingProduct.quantity++;
+    } else {
+        cart.push({
+            id: productId,
+            name: productName,
+            price: productPrice,
+            type: productType, 
+            quantity: 1
+        });
+    }
+    renderCartSummary();
+    
+    if (offcanvasInstance) {
+        offcanvasInstance.show();
+    }
+}
+
+function incrementItem(productId) {
+    const product = cart.find(item => item.id === productId);
+    if (product) product.quantity++;
+    renderCartSummary();
+}
+
+function decrementItem(productId) {
+    const product = cart.find(item => item.id === productId);
+    if (product && product.quantity > 1) {
+        product.quantity--;
+    } else {
+        removeItem(productId);
+    }
+    renderCartSummary();
+}
+
+function removeItem(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    renderCartSummary();
+}
+
+function renderCartSummary() {
+    const cartList = document.getElementById('cart-details-list');
+    const cartTotalEl = document.getElementById('cart-total');
+    let total = 0;
+
+    if (!cartList || !cartTotalEl) return; 
+
+    cartList.innerHTML = ''; 
+
+    if (cart.length === 0) {
+        cartList.innerHTML = '<li class="list-group-item text-center text-white-50">Pedido vacío</li>';
+        cartTotalEl.textContent = '$0.00';
+        return;
+    }
+
+    cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        const itemHtml = `
+            <li class="list-group-item bg-transparent text-white p-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="w-50 text-truncate">${item.name}</span>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-outline-light py-0 px-1" onclick="decrementItem('${item.id}')">-</button>
+                        <span class="mx-2">${item.quantity}</span>
+                        <button class="btn btn-sm btn-outline-light py-0 px-1" onclick="incrementItem('${item.id}')">+</button>
+                    </div>
+                    <span class="fw-bold">$${subtotal.toFixed(2)}</span>
+                </div>
+            </li>
+        `;
+        cartList.innerHTML += itemHtml;
+    });
+    cartTotalEl.textContent = `$${total.toFixed(2)}`;
+}
+
+// Lógica de 'hookSelect' (para los 3 selectores de productos)
+function hookSelect(selectId, imgId, nameId, typeId, linkId){ 
+    const sel = document.getElementById(selectId); 
+    if(!sel) return; 
+    const img = document.getElementById(imgId); 
+    const name = document.getElementById(nameId); 
+    const type = document.getElementById(typeId); 
+    const link = document.getElementById(linkId); 
+    sel.addEventListener('change', ()=>{ 
+        const opt = sel.options[sel.selectedIndex]; 
+        img.src = opt.getAttribute('data-img'); 
+        name.textContent = opt.getAttribute('data-name'); 
+        type.textContent = opt.getAttribute('data-type'); 
+        link.href = opt.getAttribute('data-url'); 
+    }); 
+}
+
+//4. LÓGICA QUE ESPERA A QUE EL HTML CARGUE
+document.addEventListener('DOMContentLoaded', (event) => {
+    
+    // A. Inicializa el Offcanvas
+    const offcanvasElement = document.getElementById('offcanvasCarrito');
+    floatingCartButton = document.getElementById('btn-abrir-carrito'); 
+    mainContentArea = document.getElementById('main-content-area');
+
+    if(offcanvasElement && floatingCartButton && mainContentArea) {
+         offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
+         
+         offcanvasElement.addEventListener('show.bs.offcanvas', () => {
+             floatingCartButton.style.display = 'none';
+             mainContentArea.style.marginRight = '400px'; 
+         });
+         
+         offcanvasElement.addEventListener('hidden.bs.offcanvas', () => {
+             floatingCartButton.style.display = 'block';
+             mainContentArea.style.marginRight = '0';
+         });
+    }
+
+    // B. Inicializa los Desplegables Dinámicos
+    const clienteSelect = document.getElementById('cliente-select');
+    const reservacionSelect = document.getElementById('reservacion-select');
+    const reservacionOptions = reservacionSelect ? Array.from(reservacionSelect.options) : [];
+
+    if (clienteSelect && reservacionSelect) {
+        clienteSelect.addEventListener('change', () => {
+            const selectedClientId = clienteSelect.value;
+            reservacionSelect.innerHTML = ''; 
+            reservacionOptions.forEach(option => {
+                if (option.value === "" || option.dataset.clienteId === selectedClientId) {
+                    reservacionSelect.appendChild(option.cloneNode(true)); 
+                }
+            });
+            if (selectedClientId === "") {
+                 reservacionSelect.innerHTML = ''; 
+                 reservacionOptions.forEach(option => reservacionSelect.appendChild(option.cloneNode(true)));
+            }
+        });
+
+        reservacionSelect.addEventListener('change', () => {
+            const selectedOption = reservacionSelect.options[reservacionSelect.selectedIndex];
+            const associatedClientId = selectedOption.dataset.clienteId;
+            if (associatedClientId) {
+                clienteSelect.value = associatedClientId;
+            }
+        });
+    }
+    
+    // C. Inicializa el botón Finalizar Pedido
+    const btnFinalizar = document.getElementById('btn-finalizar-pedido');
+    if (btnFinalizar) {
+        btnFinalizar.addEventListener('click', () => {
+            
+            if (cart.length === 0) { alert('Tu pedido está vacío.'); return; }
+            const clienteId = document.getElementById('cliente-select').value;
+            if (!clienteId) { alert('Por favor, selecciona un cliente.'); return; }
+            const empleadoClave = document.getElementById('empleado-select').value;
+            if (!empleadoClave) { alert('Por favor, selecciona un empleado para atender el pedido.'); return; }
+            
+            const reservacionId = document.getElementById('reservacion-select').value;
+            if (!reservacionId) {
+                alert('Error: Por favor, selecciona una reservación confirmada para continuar.');
+                return;
+            }
+
+            const pedidoRequest = {
+                clienteId: parseInt(clienteId),
+                empleadoClave: empleadoClave,
+                reservacionId: reservacionId ? parseInt(reservacionId) : null,
+                items: cart.map(item => ({ id: item.id, quantity: item.quantity }))
+            };
+            
+            let url = '/pedidos/crear';
+            if (editingPedidoId) {
+                url = '/pedidos/actualizar/' + editingPedidoId;
+            }
+            
+            const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+            const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+            fetch(url, { 
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    [header]: token 
+                },
+                body: JSON.stringify(pedidoRequest)
+            })
+            .then(response => {
+                if (response.ok) {
+                    const mensaje = editingPedidoId ? '¡Pedido actualizado con éxito!' : '¡Pedido creado con éxito!';
+                    alert(mensaje);
+                    window.location.href = '/pedidos'; 
+                } else {
+                    response.text().then(errorMessage => {
+                        alert(errorMessage || 'Hubo un error al procesar tu pedido.');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error de conexión al procesar tu pedido.');
+            });
+        });
+    }
+    
+    // D. Actualiza el texto del botón (si estamos editando)
+    if (editingPedidoId && btnFinalizar) {
+        btnFinalizar.textContent = 'Actualizar Pedido';
+    }
+    
+    // --- 5. INICIALIZA TODO ---
+    
+    // E. Dibuja el carrito una vez que el DOM está listo
+    renderCartSummary();
+
+    // F. Inicializa los selectores de productos
+    hookSelect('selPlatillo','imgPlatillo','namePlatillo','typePlatillo','lnkPlatillo');
+    hookSelect('selBebida','imgBebida','nameBebida','typeBebida','lnkBebida');
+    hookSelect('selPostre','imgPostre','namePostre','typePostre','lnkPostre');
+    
+    // G. ¡NUEVO! Abre el offcanvas si estamos en modo edición
+    if (editingPedidoId && offcanvasInstance) {
+        offcanvasInstance.show();
+    }
+});
+</script>
+<button class="btn btn-success rounded-circle p-3" 
+        id="btn-abrir-carrito" 
+        type="button" 
+        data-bs-toggle="offcanvas" 
+        data-bs-target="#offcanvasCarrito" 
+        aria-controls="offcanvasCarrito"
+        style="position: fixed; top: 200px; right: 20px; z-index: 1050;"> 
+    <i class="bi bi-cart3 fs-4"></i>
+</button>
+<footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

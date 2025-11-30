@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/lista-styles.css')}"></head>
+<body>
+<header th:replace="~{fragments/base :: headerCompleto}"></header>
+
+<div class="container my-5">
+    <h2>Búsqueda de Clientes</h2>
+
+    <form th:action="@{/busquedas/resultados}" method="get" class="card p-3 my-4 shadow-sm">
+        <div class="row align-items-end g-3">
+            <div class="col-md-4">
+                <label for="tipo" class="form-label fw-bold">Tipo de Búsqueda</label>
+                <select id="tipo" name="tipo" class="form-select">
+                    <option value="nombreExacto">Por Nombre Exacto</option>
+                    <option value="nombreContiene">Nombre que contenga...</option>
+                    <option value="emailExacto">Por Email Exacto</option>
+                    <option value="emailGmail">Email que termine en @gmail.com</option>
+                    <option value="creditoEntre">Crédito entre...</option>
+                    <option value="creditoMayor">Crédito mayor a...</option>
+                    <option value="destacados">Clientes Destacados</option>
+                    <option value="nombreYCredito">Nombre y Crédito mayor a...</option>
+                    <option value="fotoNoImagen">Con foto "no_imagen.jpg"</option>
+                    <option value="destacadoYCredito">Destacados con Crédito mayor a...</option>
+                    <option value="top5Credito">Top 5 por crédito</option>
+                </select>
+            </div>
+            
+            <div class="col-md-5" id="campos-busqueda">
+                <div id="campo-valor1">
+                    <label for="valor" class="form-label">Valor</label>
+                    <input type="text" id="valor" name="valor" class="form-control" />
+                </div>
+                <div id="campo-valor2" class="d-none">
+                    <label for="valor2" class="form-label">Crédito Mayor a</label>
+                    <input type="text" id="valor2" name="valor2" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${busquedaRealizada}">
+        <h4>Resultados</h4>
+        <div th:if="${#lists.isEmpty(clientesEncontrados)}" class="alert alert-warning">
+            No se encontraron clientes con los criterios de búsqueda.
+        </div>
+        
+        <div th:unless="${#lists.isEmpty(clientesEncontrados)}" class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Crédito</th>
+                    <th>Foto</th>
+                    <th>Destacado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="cliente : ${clientesEncontrados}">
+                    <td th:text="${cliente.id}"></td>
+                    <td th:text="${cliente.nombre}"></td>
+                    <td th:text="${cliente.apellidos}"></td>
+                    <td th:text="${cliente.email}"></td>
+                    <td th:text="${cliente.telefono}"></td>
+                    <td th:text="${cliente.credito}"></td>
+                    <td>
+                        <img th:src="@{/imagen/Clientes/{img}(img=${cliente.fotocliente})}" width="100" height="100" alt="Foto del Cliente" style="object-fit: cover;">
+                    </td>
+                    <td th:text="${cliente.destacado == 1 ? 'Sí' : 'No'}"></td>
+                    <td>
+                      <a th:href="@{/ver/{id}(id=${cliente.id})}" class="btn btn-sm btn-primary">Detalles</a>
+                      <a th:href="@{/modificar/{id}(id=${cliente.id})}" class="btn btn-sm btn-warning">Modificar</a>
+                      <a th:href="@{/eliminar/{id}(id=${cliente.id})}"
+                         class="btn btn-sm btn-danger"
+                         onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente?');">Eliminar</a>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/base :: footer}"></footer>
+
+<script>
+    document.getElementById('tipo').addEventListener('change', function() {
+        var tipo = this.value;
+        var campo1 = document.getElementById('campo-valor1');
+        var campo2 = document.getElementById('campo-valor2');
+        var label1 = campo1.querySelector('label');
+        
+        // Resetear visibilidad
+        campo1.classList.remove('d-none');
+        campo2.classList.add('d-none');
+
+        if (tipo === 'creditoEntre') {
+            label1.textContent = 'Crédito Mínimo';
+            label1.setAttribute('for', 'valor');
+            campo1.querySelector('input').setAttribute('name', 'valor');
+            campo2.querySelector('label').textContent = 'Crédito Máximo';
+            campo2.querySelector('input').setAttribute('name', 'valor2');
+            campo2.classList.remove('d-none');
+        } else if (tipo === 'nombreYCredito') {
+            label1.textContent = 'Nombre';
+            label1.setAttribute('for', 'valor');
+            campo1.querySelector('input').setAttribute('name', 'valor');
+            campo2.querySelector('label').textContent = 'Crédito Mayor a';
+            campo2.querySelector('input').setAttribute('name', 'valor2');
+            campo2.classList.remove('d-none');
+        } else if (tipo === 'emailGmail' || tipo === 'top5Credito' || tipo === 'destacados' || tipo === 'fotoNoImagen') {
+            campo1.classList.add('d-none');
+        } else {
+            label1.textContent = 'Valor';
+            label1.setAttribute('for', 'valor');
+            campo1.querySelector('input').setAttribute('name', 'valor');
+        }
+    });
+    // Disparar el evento al cargar la página para configurar los campos iniciales
+    document.getElementById('tipo').dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>

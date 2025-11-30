@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Administración de Mesas</h2>
+            <a th:href="@{/mesas/crear}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Mesa</a>
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Ubicación</th>
+                    <th>Capacidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="mesa : ${mesas}">
+                    <td th:text="${mesa.idMesa}"></td>
+                    <td th:text="${mesa.ubicacion}"></td>
+                    <td th:text="${mesa.capacidad} + ' personas'"></td>
+                    <td>
+                        <a th:href="@{/mesas/modificar/{id}(id=${mesa.idMesa})}" class="btn btn-warning btn-sm">Modificar</a>
+                        <a th:href="@{/mesas/eliminar/{id}(id=${mesa.idMesa})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?');">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

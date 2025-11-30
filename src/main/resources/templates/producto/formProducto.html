@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+
+    <main class="container my-auto">
+        <h1 class="my-4">Registrar Nuevo Producto</h1>
+
+        <form th:action="@{/guardarProducto}" method="post" enctype="multipart/form-data" th:object="${producto}">
+        
+        	<input type="hidden" th:field="*{idProducto}" />
+        	
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre del Producto*</label>
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required />
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio*</label>
+                <input type="number" class="form-control" id="precio" th:field="*{precio}" required />
+            </div>
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo de Producto</label>
+                <select class="form-select" id="tipo" th:field="*{tipo}" required>
+                    <option value="">Seleccione un tipo</option>
+                    <option value="Platillo">Platillo</option>
+                    <option value="Bebida">Bebida</option>
+                    <option value="Postre">Postre</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="imagenFile" class="form-label">Foto del Producto</label>
+                <input type="file" class="form-control" id="imagenFile" name="imagenFile" accept="image/*" />
+            </div>
+            <button type="submit" class="btn btn-success">Guardar Producto</button>
+            <a th:href="@{/productos}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Administración de Productos</h2>
+            <a th:href="@{/crearProducto}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Producto</a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="card card-body mb-4">
+            <form th:action="@{/productos/admin}" method="GET" class="d-flex flex-wrap gap-3">
+                <input type="text" name="nombre" class="form-control flex-grow-1" placeholder="Buscar por nombre...">
+                <input type="text" name="tipo" class="form-control flex-grow-1" placeholder="Buscar por tipo (Platillo, Bebida o Postre)">
+                <button type="submit" class="btn btn-info">Buscar</button>
+                <a th:href="@{/productos/admin}" class="btn btn-secondary">Limpiar</a>
+            </form>
+        </div>
+
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prod : ${productos}">
+                    <td th:text="${prod.idProducto}"></td>
+                    <td th:text="${prod.nombre}"></td>
+                    <td th:text="${prod.tipo}"></td>
+                    <td th:text="${#numbers.formatCurrency(prod.precio)}"></td>
+                    <td>
+                        <a th:href="@{/productos/modificar/{id}(id=${prod.idProducto})}" class="btn btn-warning btn-sm" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')">Modificar</a>
+                        <a th:href="@{/productos/eliminar/{id}(id=${prod.idProducto})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?');" sec:authorize="hasAuthority('ADMIN')">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

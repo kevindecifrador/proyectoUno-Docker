@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+    <main class="container my-5">
+        <div class="card col-md-8 mx-auto">
+            <div class="card-header"><h4>Datos de la Reservación</h4></div>
+            <div class="card-body">
+                <form th:action="@{/reservaciones/guardar}" th:object="${reservacion}" method="POST">
+                    <input type="hidden" th:field="*{idServicio}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+						    <label for="cliente">Cliente</label>
+						    <select th:field="*{cliente}" class="form-select">
+						        <option th:each="c : ${clientes}" 
+						                th:value="${c.id}" 
+						                th:text="${c.id + ' - ' + c.nombre + ' ' + c.apellidos}"></option>
+						    </select>
+						</div>
+                        <div class="col-md-6 mb-3">
+                            <label for="mesa">Mesa</label>
+                            <select th:field="*{mesa}" class="form-select">
+                                <option th:each="m : ${mesas}" th:value="${m.idMesa}" th:text="${'Mesa #' + m.idMesa + ' (' + m.capacidad + 'p, ' + m.ubicacion + ')'}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+						    <label for="fecha">Fecha</label>
+						    <input type="date" th:field="*{fecha}" class="form-control" 
+						           th:min="${hoy}" required /> </div>
+                        <div class="col-md-4 mb-3"><label for="hora">Hora</label><input type="time" th:field="*{hora}" class="form-control"></div>
+                    
+                    </div>
+                    <div class="text-end mt-3"><button type="submit" class="btn btn-success">Guardar</button> <a th:href="@{/reservaciones}" class="btn btn-secondary">Cancelar</a></div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

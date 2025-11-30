@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/inicio2-styles.css')}"></head>
+
+<body>
+<header th:replace="~{fragments/base :: headerCompleto}"></header>
+
+<main class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Lista de Pedidos</h2>
+    <b>
+    <a th:href="@{/productos}" class="btn btn-primary">Crear Nuevo Pedido</a>
+  </div>
+  <div class="card card-body mb-4">
+    <form th:action="@{/pedidos}" method="GET">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="clienteId" class="form-label">Cliente</label>
+                <select name="clienteId" id="clienteId" class="form-select">
+                    <option value="">-- Todos los Clientes --</option>
+                    <option th:each="cli : ${clientes}"
+                            th:value="${cli.id}"
+                            th:text="${cli.nombre + ' ' + cli.apellidos}"
+                            th:selected="${param.clienteId != null && cli.id == param.clienteId}"></option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="empleadoClave" class="form-label">Empleado</label>
+                <select name="empleadoClave" id="empleadoClave" class="form-select">
+                    <option value="">-- Todos los Empleados --</option>
+                    <option th:each="emp : ${empleados}"
+                            th:value="${emp.clave}"
+                            th:text="${emp.nombreCompleto}"
+                            th:selected="${param.empleadoClave != null && emp.clave == param.empleadoClave}"></option>
+                </select>
+            </div>
+            
+            <div class="col-md-2">
+                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" th:value="${param.fechaInicio}">
+            </div>
+            <div class="col-md-2">
+                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                <input type="date" name="fechaFin" id="fechaFin" class="form-control" th:value="${param.fechaFin}">
+            </div>
+            
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                <a th:href="@{/pedidos}" class="btn btn-secondary w-100">Limpiar</a>
+            </div>
+        </div>
+    
+    </form>
+</div>
+
+  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-3" th:each="p : ${pedidos}">
+      <div class="card shadow-sm h-100 d-flex flex-column">
+        <div class="card-header">
+          <h5 class="mb-0">Pedido #<span th:text="${p.idPedido}"></span></h5>
+        </div>
+        <div class="card-body p-2" style="font-size: 0.9em;">
+		    <!--  <p class="card-text"><strong>ID Cliente:</strong> <span th:text="${p.cliente != null ? p.cliente.id : 'N/A'}"></span></p> -->
+		    <p class="card-text">
+		      <strong>Cliente:</strong>
+		      <span th:if="${p.cliente != null}" th:text="${p.cliente.nombre + ' ' + p.cliente.apellidos}">Sin Asignar</span>
+		      <span th:if="${p.cliente == null}" class="text-muted">Sin Asignar</span>
+		    </p>
+		
+		    <p class="card-text"><strong>Atendido por:</strong></p>
+		    <ul class="list-unstyled ms-3" style="font-size: 0.9em;">
+		        <li th:if="${p.empleadosQueAtienden.isEmpty()}" class="text-muted">-- Sin Asignar --</li>
+		        <li th:each="emp : ${p.empleadosQueAtienden}" th:text="${emp.nombreCompleto} + ' (' + ${emp.puesto} + ')'"></li>
+		    </ul>
+		    <div th:if="${p.reservacion != null}">
+		        <hr>
+		        <p class="card-text mb-1"><strong>Reservación Asociada:</strong></p>
+		        <ul class="list-unstyled ms-3" style="font-size: 0.9em;">
+		            <li><strong>ID:</strong> <span th:text="${p.reservacion.idServicio}"></span></li>
+		            <li><strong>Fecha/Hora:</strong> <span th:text="${#temporals.format(p.reservacion.fecha, 'dd/MM/yy')} + ' ' + ${#temporals.format(p.reservacion.hora, 'HH:mm')}"></span></li>
+		            <li><strong>Mesa:</strong> <span th:text="${'#' + p.reservacion.mesa.idMesa + ' (' + p.reservacion.mesa.capacidad + 'personas, ' + p.reservacion.mesa.ubicacion + ')'}"></span></li>
+		        </ul>
+		    </div>
+		    <hr>
+		    <p class="card-text"><strong>Fecha Pedido:</strong> <span th:text="${#temporals.format(p.fecha,'dd-MM-yyyy')}"></span></p>
+		    <p class="card-text"><strong>Productos:</strong> <span th:text="${#lists.size(p.detalles)}"></span></p>
+		    <h4 class="card-title text-end mt-3">Total: $<span th:text="${#numbers.formatDecimal(p.total,1,2)}"></span></h4>
+		</div>
+			<div class="card-footer text-end">
+    
+		    <a href="#" class="btn btn-sm" style="background-color: #d3d3d3; color: #244821; border-color: #B49214;"
+		       data-bs-toggle="modal" data-bs-target="#detallePedidoModal"
+		       th:attr="
+		         data-pedido-id=${p.idPedido},
+		         data-pedido-fecha=${#temporals.format(p.fecha,'dd-MM-yyyy')},
+		         data-pedido-cliente-id=${p.cliente != null ? p.cliente.id : 'N/A'},
+		         data-pedido-cliente=${p.cliente != null ? p.cliente.nombre + ' ' + p.cliente.apellidos : 'N/A'},
+		         data-pedido-total=${#numbers.formatDecimal(p.total,1,2)},
+		         data-pedido-detalles=${objectMapper.writeValueAsString(p.detalles)},
+		         data-pedido-empleados=${!p.empleadosQueAtienden.isEmpty() ? #strings.listJoin(p.empleadosQueAtienden.![nombreCompleto + ' (' + puesto + ')'], ', ') : 'N/A'},
+		         data-pedido-reserva-info=${p.reservacion != null ? '#' + p.reservacion.idServicio + ' (' + #temporals.format(p.reservacion.fecha, 'dd/MM/yy') + ' ' + #temporals.format(p.reservacion.hora, 'HH:mm') + ') - Mesa #' + p.reservacion.mesa.idMesa + ' (' + p.reservacion.mesa.capacidad + 'personas, ' + p.reservacion.mesa.ubicacion + ')' : 'N/A'}
+		         ">
+		        Ver Detalle
+		    </a>
+		
+		    <a th:href="@{/productos(editarPedidoId=${p.idPedido})}" 
+		       class="btn btn-warning btn-sm"
+		       sec:authorize="hasAnyAuthority('ADMIN', 'CAJERO', 'MESERO', 'SUPERVISOR')"> 
+		       <i class="bi bi-pencil-fill"></i> Modificar
+		    </a>
+		    
+		    <a th:href="@{/pedidos/eliminar/{id}(id=${p.idPedido})}" 
+		       class="btn btn-sm btn-danger" 
+		       onclick="return confirm('¿Seguro que quieres eliminar este pedido?');"
+		       sec:authorize="hasAnyAuthority('ADMIN', 'CAJERO', 'SUPERVISOR')">
+		        Eliminar
+		    </a>
+		
+		</div>
+      </div>
+    </div>
+    <div class="col-12" th:if="${#lists.isEmpty(pedidos)}">
+      <div class="alert alert-warning text-center">No hay pedidos para mostrar.</div>
+    </div>
+  </div>
+</main>
+
+<div class="modal fade" id="detallePedidoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle del Pedido #<span id="modal-pedido-id"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+		    <p><strong>Cliente:</strong> <span id="modal-pedido-cliente"></span></p>
+		    <p><strong>Fecha Pedido:</strong> <span id="modal-pedido-fecha"></span></p>
+		
+		    <p><strong>Atendido por:</strong> <span id="modal-pedido-empleados"></span></p>
+		    <p><strong>Reservación Asociada:</strong> <span id="modal-pedido-reserva"></span></p>
+		    <hr>
+		    <h6>Productos:</h6>
+		    <table class="table">
+		      <thead>
+		        <tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr>
+		      </thead>
+		      <tbody id="modal-detalles-body"></tbody>
+		    </table>
+		    <h4 class="text-end mt-3">Total: $<span id="modal-pedido-total"></span></h4>
+		</div>
+      <div class="modal-footer">
+      	<a id="modal-imprimir-pdf" href="#" class="btn btn-primary" target="_blank">Imprimir Ticket</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/base :: footer}"></footer>
+
+<script th:inline="none">
+  const detalleModal = document.getElementById('detallePedidoModal');
+  if (detalleModal) {
+    detalleModal.addEventListener('show.bs.modal', event => {
+      // Leer atributos
+      const button = event.relatedTarget;
+      const pedidoId = button.getAttribute('data-pedido-id') || '';
+      const pedidoFecha = button.getAttribute('data-pedido-fecha') || '';
+      const pedidoClienteId = button.getAttribute('data-pedido-cliente-id') || 'N/A';
+      const pedidoCliente = button.getAttribute('data-pedido-cliente') || 'N/A';
+      const pedidoTotal = button.getAttribute('data-pedido-total') || '0.00';
+      const detallesRaw = button.getAttribute('data-pedido-detalles') || '[]';
+      const pedidoEmpleados = button.getAttribute('data-pedido-empleados') || 'N/A';
+      const pedidoReservaInfo = button.getAttribute('data-pedido-reserva-info') || 'N/A';
+
+      let pedidoDetalles = [];
+      try { pedidoDetalles = JSON.parse(detallesRaw); } catch(e) { console.error('Error parsing JSON:', e); }
+  
+   	// Actualiza el enlace del botón de imprimir con el ID del pedido
+      detalleModal.querySelector('#modal-imprimir-pdf').href = `/pedidos/ticket/${pedidoId}`;
+      
+      // Rellenar campos
+      detalleModal.querySelector('#modal-pedido-id').textContent = pedidoId;
+      detalleModal.querySelector('#modal-pedido-cliente').textContent = `${pedidoClienteId} - ${pedidoCliente}`; // Muestra ID y Nombre
+      detalleModal.querySelector('#modal-pedido-fecha').textContent = pedidoFecha;
+      detalleModal.querySelector('#modal-pedido-total').textContent = pedidoTotal;
+
+      detalleModal.querySelector('#modal-pedido-empleados').textContent = pedidoEmpleados;
+      detalleModal.querySelector('#modal-pedido-reserva').textContent = pedidoReservaInfo;
+
+      // Rellenar tabla de detalles
+      const tbody = detalleModal.querySelector('#modal-detalles-body');
+      tbody.innerHTML = '';
+      if (pedidoDetalles.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sin detalles</td></tr>';
+        return;
+      }
+      pedidoDetalles.forEach(detalle => {
+        const nombre = detalle.producto?.nombre || 'N/D';
+        const cantidad = detalle.cantidad || 0;
+        const precio = detalle.precio || 0;
+        const subtotal = cantidad * precio;
+        const row = `<tr><td>${nombre}</td><td>${cantidad}</td><td>$${precio.toFixed(2)}</td><td>$${subtotal.toFixed(2)}</td></tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

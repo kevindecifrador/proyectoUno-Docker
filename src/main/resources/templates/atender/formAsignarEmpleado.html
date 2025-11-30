@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h4>Gestionar Empleados para el Pedido</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="alert alert-info">
+                            Estás gestionando el <strong>Pedido #<span th:text="${pedido.idPedido}"></span></strong> 
+                            para el cliente <strong th:text="${pedido.cliente.nombre}"></strong>.
+                        </div>
+
+                        <h5>Empleados Asignados</h5>
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr><th>Nombre</th><th>Puesto</th><th>Acción</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${pedido.empleadosQueAtienden.isEmpty()}">
+                                    <td colspan="3" class="text-center text-muted">Aún no hay empleados asignados.</td>
+                                </tr>
+                                <tr th:each="emp : ${pedido.empleadosQueAtienden}">
+                                    <td th:text="${emp.nombreCompleto}"></td>
+                                    <td th:text="${emp.puesto}"></td>
+                                    <td>
+                                        <a th:href="@{/atender/quitar/{idPedido}/{claveEmpleado}(idPedido=${pedido.idPedido}, claveEmpleado=${emp.clave})}"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('¿Quitar a este empleado del pedido?');">
+                                           Quitar
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr class="my-4">
+
+                        <h5>Asignar Nuevo Empleado</h5>
+                        <form th:action="@{/atender/guardar}" method="POST">
+                            <input type="hidden" name="idPedido" th:value="${pedido.idPedido}" />
+
+                            <div class="mb-3">
+                                <label for="claveEmpleado" class="form-label">Seleccionar Empleado</label>
+                                <select name="claveEmpleado" id="claveEmpleado" class="form-select" required>
+                                    <option value="">-- Elige un empleado para añadir --</option>
+                                    <option th:each="emp : ${empleados}"
+                                            th:if="${!pedido.empleadosQueAtienden.contains(emp)}"
+                                            th:value="${emp.clave}"
+                                            th:text="${emp.nombreCompleto + ' (' + emp.puesto + ')'}">
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-success">Añadir Empleado</button>
+                                <a th:href="@{/atender}" class="btn btn-secondary">Volver a la Lista</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

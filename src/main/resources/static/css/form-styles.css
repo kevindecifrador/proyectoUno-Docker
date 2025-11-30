@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+html, body {
+    background-image: url('/imagenrestaurant/fondorest2.jpg');
+    background-size: cover;
+    background-attachment: fixed; /* Añadido para que el fondo no se mueva con el scroll */
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    border-radius: 15px;
+    padding: 2rem !important;
+}
+
+/* Ajuste para que el contenedor del formulario no ocupe todo el alto */
+.container {
+    height: auto;
+}

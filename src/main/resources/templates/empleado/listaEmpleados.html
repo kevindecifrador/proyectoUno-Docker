@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Lista de Empleados</h2>
+            <a th:href="@{/empleados/crear}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Empleado</a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="card card-body mb-4">
+            <form th:action="@{/empleados}" method="GET" class="d-flex gap-2">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por nombre...">
+                <button type="submit" class="btn btn-info">Buscar</button>
+                <a th:href="@{/empleados}" class="btn btn-secondary">Limpiar</a>
+            </form>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Clave</th>
+                            <th>Nombre Completo</th>
+                            <th>Puesto</th>
+                            <th>Cuenta de Usuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+				    <tr th:each="empleado : ${listaEmpleados}" th:if="${empleado != null}">
+				
+				        <td th:text="${empleado.clave}"></td>
+				        <td th:text="${empleado.nombreCompleto}"></td>
+				        <td th:text="${empleado.puesto}"></td>
+				
+				        <td>
+				            <div th:if="${empleado.usuario != null}">
+				                <span class="badge bg-dark">
+				                    <i class="bi bi-person-check-fill"></i>
+				                    <span th:text="${empleado.usuario.username}"></span>
+				                </span>
+				            </div>
+				            <div th:if="${empleado.usuario == null}">
+				                <a th:href="@{/usuarios/asignarEmpleado/{id}(id=${empleado.clave})}"
+				                   class="btn btn-sm btn-success">
+				                    <i class="bi bi-person-plus-fill"></i> Asignar Login
+				                </a>
+				            </div>
+				        </td>
+				
+				        <td>
+				            <a th:href="@{/empleados/modificar/{clave}(clave=${empleado.clave})}" class="btn btn-warning btn-sm">Modificar</a>
+				            <a th:href="@{/empleados/eliminar/{clave}(clave=${empleado.clave})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar a este empleado?');">Eliminar</a>
+				        </td>
+				
+				    </tr> </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>

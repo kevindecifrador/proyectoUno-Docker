@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Hola</title>
+
+</head>
+<body>
+	<h1 th:text="${nombre1}"></h1>
+	
+	<h3>La fecha de hoy es
+  	<span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}"></span>
+	</h3>
+
+</body>
+</html>

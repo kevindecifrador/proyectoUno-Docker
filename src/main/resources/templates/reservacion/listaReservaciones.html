@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/base :: head(styles='/css/form-styles.css')}"></head>
+<body>
+    <header th:replace="~{fragments/base :: headerCompleto}"></header>
+    <main class="container my-5">
+        <h2>Administración de Reservaciones</h2>
+        <a th:href="@{/reservaciones/crear}" class="btn btn-secondary mb-3">Nueva Reservación</a>
+        <a th:href="@{/productos}" class="btn btn-secondary mb-3" style="background-color: #244821;">¿Ya esta tu Reservación? Ordena...</a>
+        
+        <div class="card card-body mb-4">
+            <form th:action="@{/reservaciones}" method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4"><label for="fechaInicio">Fecha Inicio:</label><input type="date" name="fechaInicio" class="form-control"></div>
+                    <div class="col-md-4"><label for="fechaFin">Fecha Fin:</label><input type="date" name="fechaFin" class="form-control"></div>
+                    <div class="col-md-2"><label for="capacidad">Capacidad Mín.:</label><input type="number" name="capacidad" class="form-control" min="1"></div>
+                    <div class="col-md-2 d-flex gap-2"><button type="submit" class="btn btn-info">Buscar</button><a th:href="@{/reservaciones}" class="btn btn-secondary">Limpiar</a></div>
+                </div>
+            </form>
+        </div>
+
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr><th>ID</th><th>Cliente</th><th>Mesa</th><th>Fecha</th><th>Hora</th><th>Estatus</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="res : ${reservaciones}">
+                    <td th:text="${res.idServicio}"></td>
+                    <td th:text="${res.cliente.nombre}"></td>
+                    <td th:text="${'Mesa #' + res.mesa.idMesa + ' (' + res.mesa.capacidad + 'p, ' + res.mesa.ubicacion + ')'}"></td>
+                    <td th:text="${#temporals.format(res.fecha, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${#temporals.format(res.hora, 'HH:mm')}"></td>
+                    <td><span class="badge" th:classappend="${res.estatus.name() == 'PENDIENTE' ? 'bg-warning' : (res.estatus.name() == 'CONFIRMADA' ? 'bg-success' : 'bg-danger')}" th:text="${res.estatus.name()}"></span></td>
+                    <td>
+
+				    <div sec:authorize="hasAnyAuthority('ADMIN', 'CAJERO')">
+				        
+				        <a th:if="${res.estatus.name() == 'PENDIENTE'}"
+				           th:href="@{/reservaciones/confirmar/{id}(id=${res.idServicio})}"
+				           class="btn btn-success btn-sm"
+				           th:classappend="${!res.fecha.isEqual(hoy)} ? 'disabled' : ''"
+				           th:title="${!res.fecha.isEqual(hoy)} ? 'Solo se puede confirmar el día de la reserva' : 'Confirmar reserva'">
+				           Confirmar
+				        </a>
+				
+				        <a th:href="@{/reservaciones/modificar/{id}(id=${res.idServicio})}" 
+				           class="btn btn-warning btn-sm">
+				           Modificar
+				        </a>
+				
+				        <a th:href="@{/reservaciones/cancelar/{id}(id=${res.idServicio})}" 
+				           class="btn btn-danger btn-sm" 
+				           onclick="return confirm('¿Seguro?');">
+				           Cancelar
+				        </a>
+				        
+				    </div>
+				    
+				    <span sec:authorize="hasAuthority('CLIENTE')" class="text-muted text-small">
+				        Solo lectura
+				    </span>
+				</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+</body>
+</html>
